@@ -1,14 +1,9 @@
 import express from "express";
-import {
-    sendSos,
-    getSos,
-    checkVibrationForSOS
-} from '../controllers/sos'
-import { isLoggedIn } from "../middleware/isloggedin";
-
 export const router = express.Router();
+import { postsos,getsos, updatesos } from "../controllers/sosPost";
+import { isLoggedIn } from "../middleware/isloggedin";
+router.post('/', isLoggedIn, postsos).get('/', isLoggedIn, getsos).post('/update', updatesos)
+  
 
-router
-    .post('/send', isLoggedIn, sendSos)
-    .get('/get', getSos)
-    .get('/vibration', isLoggedIn, checkVibrationForSOS)
+
+

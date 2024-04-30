@@ -1,27 +1,29 @@
-import express, { Request, Response, Express } from 'express';
-import dotenv from 'dotenv';
-import cors from 'cors';
-import { router as auth } from './routes/auth';
-import { router as data } from './routes/data';
-import { router as sos } from './routes/sos'
-import connectToDB from './utils/connect-db';
-import checkForInactivity from './cron/sosCron';
+import { Server } from './app';
+import { config } from './config';
+config.databaseConnection()
+config.verifyConfig()
+import { checkSosforadmin } from './cron/sosadmin';
 
+checkSosforadmin()
 import cron from 'node-cron';
-dotenv.config();
-connectToDB();
-const app: Express = express();
+import { checkVibrationsForAllUsers } from './cron/vibration';
+import { checkGasLevelsForAllUsers } from './cron/gas';
+import { checkTemperatureForAllUsers } from './cron/temperature';
 
-// cron.schedule('*/5 * * * * *', () => {
-//   checkForInactivity();
+
+// cron.schedule('*/5= * * * *', () => {
+//   console.log('Checking gas levels');
+//   checkGasLevelsForAllUsers(250);
+//   setTimeout(() => {
+//     console.log('Checking vibrations');
+//     checkVibrationsForAllUsers();
+//   }, 30000);
+//   setTimeout(() => {
+//     console.log('Checking temperature');
+//     checkTemperatureForAllUsers(45);
+//   }, 60000);
 // });
-
-app.use(express.json());
-app.use(cors());
-app.use('/auth', auth)
-app.use('/data', data)
-app.use('/sos', sos)
-
-app.listen(process.env.PORT, () => {
-  console.log(`Server is running on port ${process.env.PORT}`);
+checkGasLevelsForAllUsers(250);
+Server.listen(config.PORT, () => {
+  console.log(`Server is running on port ${config.PORT}`);
 });
